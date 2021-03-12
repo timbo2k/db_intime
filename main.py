@@ -72,7 +72,7 @@ if __name__ == '__main__':
             except Exception as inst:
                 print("Exception occured on parsing json for string {}: {}".format(entry,inst))
     print("found large stations: {}".format(len(largeStations)))
-    #for station in largeStations:
-    #    req(station)
+    for station in largeStations:
+        req(station)
 
 
