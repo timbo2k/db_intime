@@ -68,7 +68,7 @@ if __name__ == '__main__':
                 largeStations.append(entry['evaNumber'])
 
     print("found large stations: {}".format(len(largeStations)))
-    # for station in largeStations:
-    #     req(station)
+    for station in largeStations:
+        req(station)
 
 
