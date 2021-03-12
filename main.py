@@ -11,6 +11,7 @@ import pymongo
 from pymongo.collection import Collection
 from pymongo.results import UpdateResult
 import json
+import ast
 
 
 API_KEY = 'CQv024gGLhn95I06cU1QruZyQZVfej9R3211'
@@ -62,13 +63,16 @@ if __name__ == '__main__':
     largeStations = []
     with open("stations.txt") as f:
         for line in f:
-            correct_line = str(line.strip()).replace("'", '"')
-            entry = json.loads(correct_line)
-            if 'HIGH_SPEED_TRAIN' in entry['availableTransports'] or 'INTERCITY_TRAIN' in entry['availableTransports'] or 'INTER_REGIONAL_TRAIN' in entry['availableTransports']:
-                largeStations.append(entry['evaNumber'])
 
+            correct_line = str(line.strip()).replace("'", '"')
+            try:
+                entry = json.loads(correct_line)
+                if 'HIGH_SPEED_TRAIN' in entry['availableTransports'] or 'INTERCITY_TRAIN' in entry['availableTransports'] or 'INTER_REGIONAL_TRAIN' in entry['availableTransports']:
+                    largeStations.append(entry['evaNumber'])
+            except Exception as inst:
+                print("Exception occured on parsing json for string {}: {}".format(entry,inst))
     print("found large stations: {}".format(len(largeStations)))
-    for station in largeStations:
-        req(station)
+    #for station in largeStations:
+    #    req(station)
 
 
