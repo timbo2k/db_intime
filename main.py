@@ -32,16 +32,17 @@ def request_api(station_eva):
     response = requests.request("GET", url, headers=headers, data=payload)
 
     arrivals: Collection = client.db["arrivals"]
-    for entry in response.json()["arrivals"]:
-        try:
+    try:
+        for entry in response.json()["arrivals"]:
+
             update_result: UpdateResult = arrivals.replace_one({"arrivalID": entry["arrivalID"]}, entry, upsert=True)
             if update_result.matched_count > 0:
                 print(".", end="")
             else:
                 print("!", end="")
 
-        except Exception as inst:
-            print("Exception occured: {}".format(inst))
+    except Exception as inst:
+        print("Exception occured: {}".format(inst))
     print("\n")
 
 
