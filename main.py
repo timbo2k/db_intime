@@ -32,13 +32,16 @@ def request_api(station_eva):
 
     arrivals: Collection = client.db["arrivals"]
     for entry in response.json()["arrivals"]:
+        try:
+            update_result: UpdateResult = arrivals.replace_one({"arrivalID": entry["arrivalID"]}, entry, upsert=True)
+            if update_result.matched_count > 0:
+                print(".", end="")
+            else:
+                print("!", end="")
 
-        update_result: UpdateResult = arrivals.replace_one({"arrivalID": entry["arrivalID"]}, entry, upsert=True)
-        if update_result.matched_count > 0:
-            print(".", end="")
-        else:
-            print("!", end="")
-        print("")
+        except Exception as inst:
+            print("Exception occured: {}".format(inst))
+    print("\n")
 
 
 def req(station_ava, loop=False):
@@ -55,33 +58,16 @@ def req(station_ava, loop=False):
 
 
 if __name__ == '__main__':
-    # search for all stations
-    payload = {}
-    stationCount = 0
-    offset = 275600
+
     largeStations = []
-    f = open("stations.txt", "w")
-
-    initial = True
-    while offset < 310000:
-        url = "https://gateway.businesshub.deutschebahn.com/ris-stations/v1/stop-places?offset={}&limit=100".format(offset)
-        response = requests.request("GET", url, headers=headers, data=payload)
-
-        for entry in response.json()["stopPlaces"]:
-            #print(offset)
-            #print(entry)
-            #print("{}: {}".format(entry['evaNumber'],entry['availableTransports']))
-            f.write("{}\n".format(entry))
-            if initial:
-                f.close()
-                f = open("stations.txt", "a")
-
+    with open("stations.txt") as f:
+        for line in f:
+            correct_line = str(line.strip()).replace("'", '"')
+            entry = json.loads(correct_line)
             if 'HIGH_SPEED_TRAIN' in entry['availableTransports'] or 'INTERCITY_TRAIN' in entry['availableTransports'] or 'INTER_REGIONAL_TRAIN' in entry['availableTransports']:
                 largeStations.append(entry['evaNumber'])
-        offset = offset + 100
-        print("Offset {}: Stations: {}".format(offset,largeStations))
+
     print("found large stations: {}".format(len(largeStations)))
-    f.close()
     # for station in largeStations:
     #     req(station)
 
