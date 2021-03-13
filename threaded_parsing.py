@@ -28,7 +28,7 @@ headers = {
 threads = list()
 
 
-def request_api(station_eva):
+def request_api(station_eva, thread_number=-1):
     payload = {}
 
     url = 'https://gateway.businesshub.deutschebahn.com/ris-boardspublic/trial/v1/public/arrivals/{}'.format(station_eva)
@@ -46,27 +46,26 @@ def request_api(station_eva):
                 print("!", end="")
 
     except Exception as inst:
-        # print("Exception occured: {}\n".format(inst))
         try:
             if 'rate limit exceeded' in str(response.content):
-                print("Rate Limit exceeded ... waiting 4s", flush=True)
-                sleep(4)
-                request_api(station_eva)
+                print("Rate Limit exceeded ... waiting 5s (thread #{})".format(thread_number), flush=True)
+                sleep(5)
+                request_api(station_eva, thread_number)
         except Exception as inst2:
             print("Exception occured: {}".format(inst2))
     # print("\n")
 
 
-def req(station_ava, loop=False):
+def req(station_ava,thread_number=-1, loop=False):
     if loop:
         print("looped request to {}".format(station_ava))
         while (True):
-            request_api(station_ava)
+            request_api(station_ava,thread_number)
             print("Sleep 30s")
             sleep(30)
             print("next iteration")
     else:
-        request_api(station_ava)
+        request_api(station_ava,thread_number)
 
 
 def thread_function(subList, thread_number):
@@ -76,7 +75,7 @@ def thread_function(subList, thread_number):
         print("next iteration for thread {}\n".format(thread_number), flush=True)
         processed = 0
         for station in subList:
-            req(station)
+            req(station,thread_number)
             processed = processed + 1
             print("request to {} (thread #{}: {}/{})".format(station,thread_number,processed,len(subList)), flush=True)
             sleep(1)
