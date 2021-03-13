@@ -55,4 +55,5 @@ while True:
     print(f"Aggregating Delays... from {arrivals.count_documents({})} arrivals...")
     arrivals.aggregate(pipeline)
     print(f"Currently {delays.count_documents({})} delays recorded...")
-    sleep(60)
+    print("Sleeping for 300s")
+    sleep(300)
