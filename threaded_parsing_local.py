@@ -66,7 +66,6 @@ def req(station_ava, loop=False):
             sleep(30)
             print("next iteration")
     else:
-        print("single request to {}".format(station_ava))
         request_api(station_ava)
 
 
@@ -75,10 +74,13 @@ def thread_function(subList, thread_number):
     print("thread {} started with stations: {}".format(thread_number, subList), flush=True)
     while True:
         print("next iteration for thread {}\n".format(thread_number), flush=True)
+        processed = 0
         for station in subList:
             req(station)
+            processed = processed + 1
+            print("request to {} (thread #{}: {}/{})".format(station, thread_number, processed, len(subList)), flush=True)
             sleep(1)
-        print("Loop completed for thread {}, sleeping 30s\n".format(thread_number))
+        print("Loop completed for thread {}, sleeping 60s\n".format(thread_number), flush=True)
         sleep(60)
 
 def start_threaded_processing(subList,thread_number):
