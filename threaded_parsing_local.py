@@ -108,7 +108,7 @@ if __name__ == '__main__':
     for station in stations:
         subList.append(station)
         stationCount = stationCount+1
-        if stationCount % 400 == 0:
+        if stationCount % 2000 == 0:
             start_threaded_processing(subList, threadCount)
             threadCount = threadCount + 1
             subList=[]
