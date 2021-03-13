@@ -12,38 +12,43 @@ delays: Collection = client.db["delays"]
 pipeline = [
     {
         '$match': {
-            'timeType': 'REAL'
-        }
-    }, {
-    '$addFields': {
-        'date': {
-            '$toDate': '$time'
-        },
-        'dateSchedule': {
-            '$toDate': '$timeSchedule'
-        }
-    }
-}, {
-    '$addFields': {
-        'dateDifferenceMs': {
-            '$subtract': [
-                '$date', '$dateSchedule'
+            '$or': [
+                {
+                    'timeType': 'REAL'
+                }, {
+                    'timeType': 'PREVIEW'
+                }
             ]
         }
+    }, {
+        '$addFields': {
+            'date': {
+                '$toDate': '$time'
+            },
+            'dateSchedule': {
+                '$toDate': '$timeSchedule'
+            }
+        }
+    }, {
+        '$addFields': {
+            'dateDifferenceMs': {
+                '$subtract': [
+                    '$date', '$dateSchedule'
+                ]
+            }
+        }
+    }, {
+        '$project': {
+            'station': 1,
+            'time': 1,
+            'timeSchedule': 1,
+            'arrivalID': 1,
+            'dateDifferenceMs': 1,
+            'transport': 1
+        }
+    }, {
+        '$out': 'delays'
     }
-}, {
-    '$project': {
-        'station': 1,
-        'time': 1,
-        'timeSchedule': 1,
-        'arrivalID': 1,
-        'dateDifferenceMs': 1,
-        'transport': 1,
-        'journeyID': 1
-    }
-}, {
-    '$out': 'delays'
-}
 ]
 
 while True:
